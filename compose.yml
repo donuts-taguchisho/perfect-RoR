@@ -5,7 +5,29 @@ services:
     build: .
     ports:
       - '8000:3000'
+    # ステップ2で追記、database.ymlで参照するため
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
     volumes:
       - type: bind
         source: ./app
         target: /app
+    # ステップ2で追記、dbサービスと依存関係があり指定
+    depends_on:
+      - db
+
+  # ステップ2で追記、PostgreSQLのイメージを使用
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_ROOT_PASSWORD: password
+    ports:
+      - '5432:5432'
+    volumes:
+      - type: bind
+        source: ./db_data
+        target: /var/lib/postgresql/data
